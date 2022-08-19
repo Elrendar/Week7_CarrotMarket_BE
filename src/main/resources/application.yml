@@ -36,7 +36,7 @@ jwt:
 
 logging:
   level:
-    com.sparta.doing: debug
+    com.sparta.velog: debug
     org:
       hibernate:
         type:
