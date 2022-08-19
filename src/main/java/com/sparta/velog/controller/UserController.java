@@ -8,10 +8,7 @@ import com.sparta.velog.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -34,8 +31,8 @@ public class UserController {
     }
 
     // 아이디 중복 체크
-    @PostMapping("/auth/dupcheck")
-    public ResponseEntity<Boolean> checkUsername(@RequestBody String username) {
+    @GetMapping("/auth/dupcheck/{username}")
+    public ResponseEntity<Boolean> checkUsername(@PathVariable String username) {
         Assert.hasText(username, "username이 비어있거나 null입니다.");
         return ResponseEntity.ok(userService.checkUsername(username));
     }
