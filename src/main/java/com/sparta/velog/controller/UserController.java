@@ -31,8 +31,8 @@ public class UserController {
     }
 
     // 아이디 중복 체크
-    @GetMapping("/auth/dupcheck/{username}")
-    public ResponseEntity<Boolean> checkUsername(@PathVariable String username) {
+    @GetMapping("/auth/dupcheck")
+    public ResponseEntity<Boolean> checkUsername(@RequestParam String username) {
         Assert.hasText(username, "username이 비어있거나 null입니다.");
         return ResponseEntity.ok(userService.checkUsername(username));
     }
