@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 @Builder
 @AllArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PROTECTED)
-@Table(name = "refresh_token")
+@Table(name = "refresh_tokens")
 @Entity
 public class RefreshToken extends TimeStamp {
 
@@ -24,12 +24,12 @@ public class RefreshToken extends TimeStamp {
     @Column(name = "rt_key")
     @NotNull
     // userId(PK)가 들어감
-    Long key;
+    private Long key;
 
     @With
     @Column(name = "rt_value")
     @NotBlank
-    String value;
+    private String value;
 
     protected RefreshToken() {
         this.key = null;

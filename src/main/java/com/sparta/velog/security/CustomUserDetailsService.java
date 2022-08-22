@@ -5,7 +5,6 @@ import com.sparta.velog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,11 +30,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     // DB 에 User 값이 존재한다면 UserDetails 객체로 만들어서 리턴
-    private User createUser(UserEntity user) {
+    private CustomUserDetails createUser(UserEntity user) {
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(user.getAuthority());
 
-        return new User(String.valueOf(user.getId()),
+        return new CustomUserDetails(user.getUsername(),
                 user.getPassword(),
+                user.getId(),
                 Collections.singleton(grantedAuthority)
         );
     }

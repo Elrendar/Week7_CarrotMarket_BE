@@ -3,6 +3,7 @@ package com.sparta.velog.exception;
 import com.sparta.velog.exception.apierror.ApiError;
 import com.sparta.velog.exception.runtime.DuplicateUserInfoException;
 import com.sparta.velog.exception.runtime.InvalidJWTException;
+import com.sparta.velog.exception.runtime.PostNotFoundException;
 import com.sparta.velog.exception.runtime.RefreshTokenNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -226,6 +227,34 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(UsernameNotFoundException.class)
     protected ResponseEntity<Object> handleUsernameNotFound(UsernameNotFoundException ex) {
+        ApiError apiError = new ApiError(NOT_FOUND);
+        apiError.setMessage(ex.getMessage());
+        apiError.setDebugMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
+
+    /**
+     * DB에서 Post를 찾을 수 없을 때 발생
+     *
+     * @param ex the Exception
+     * @return the ApiError object
+     */
+    @ExceptionHandler(PostNotFoundException.class)
+    protected ResponseEntity<Object> handlePostNotFound(PostNotFoundException ex) {
+        ApiError apiError = new ApiError(NOT_FOUND);
+        apiError.setMessage(ex.getMessage());
+        apiError.setDebugMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
+
+    /**
+     * 수정, 삭제 권한 등이 없을 때 발생
+     *
+     * @param ex the Exception
+     * @return the ApiError object
+     */
+    @ExceptionHandler(UnAuthorizedException.class)
+    protected ResponseEntity<Object> handleUnAuthorized(UnAuthorizedException ex) {
         ApiError apiError = new ApiError(NOT_FOUND);
         apiError.setMessage(ex.getMessage());
         apiError.setDebugMessage(ex.getMessage());

@@ -8,6 +8,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -15,17 +17,23 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Getter
-public class UserEntity {
+public class UserEntity extends TimeStamp {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    @Column(name = "user_id")
+    private Long id;
     @Column
     @NotBlank
-    String username;
+    private String username;
     @Column
     @NotBlank
     @JsonIgnore
-    String password;
+    private String password;
+    @Column
+    private String profileImageUrl;
+    @Column
+    @NotNull
+    private String selfDescription;
     @Column
     @NotBlank
     @JsonIgnore
@@ -39,6 +47,7 @@ public class UserEntity {
         return UserEntity.builder()
                 .username(userRequestDto.getUsername())
                 .password(passwordEncoder.encode(userRequestDto.getPassword1()))
+                .selfDescription("")
                 .build();
     }
 
@@ -46,8 +55,8 @@ public class UserEntity {
         if (requestDto.getProfileImageUrl() != null) {
             this.profileImageUrl = requestDto.getProfileImageUrl();
         }
-        if (requestDto.getDescription() != null) {
-            this.profileImageUrl = requestDto.getDescription();
+        if (requestDto.getSelfDescription() != null) {
+            this.selfDescription = requestDto.getSelfDescription();
         }
     }
 }

@@ -1,9 +1,6 @@
 package com.sparta.velog.controller;
 
-import com.sparta.velog.dto.TokenDto;
-import com.sparta.velog.dto.TokenRequestDto;
-import com.sparta.velog.dto.UserRequestDto;
-import com.sparta.velog.dto.UserResponseDto;
+import com.sparta.velog.dto.*;
 import com.sparta.velog.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -47,5 +44,19 @@ public class UserController {
     @PostMapping("/renew")
     public ResponseEntity<TokenDto> renewToken(@RequestBody TokenRequestDto tokenRequestDto) {
         return ResponseEntity.ok(userService.renewToken(tokenRequestDto));
+    }
+
+    // 유저 정보 가져오기
+    @GetMapping("/myinfo")
+    public ResponseEntity<UserResponseDto> getMyInfo() {
+        var userId = SecurityUtil.getCurrentUserIdByLong();
+        return ResponseEntity.ok(userService.getUserInfo(userId));
+    }
+
+    // 유저 정보 수정하기
+    @PatchMapping("/myinfo")
+    public ResponseEntity<UserResponseDto> updateMyInfo(@RequestBody UserInfoUpdateDto userInfoUpdateDto) {
+        var userId = SecurityUtil.getCurrentUserIdByLong();
+        return ResponseEntity.ok(userService.updateUserInfo(userId, userInfoUpdateDto));
     }
 }

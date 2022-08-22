@@ -1,9 +1,11 @@
 package com.sparta.velog.security.jwt;
 
 import com.sparta.velog.exception.ExceptionCode;
+import com.sparta.velog.exception.runtime.InvalidJWTException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.InvalidKeyException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -67,6 +69,10 @@ public class JwtFilter extends OncePerRequestFilter {
             servletRequest.setAttribute("exception", ExceptionCode.UNSUPPORTED_TOKEN.getCode());
         } catch (IllegalArgumentException e) {
             servletRequest.setAttribute("exception", ExceptionCode.WRONG_TOKEN.getCode());
+        } catch (InvalidJWTException e) {
+            servletRequest.setAttribute("exception", ExceptionCode.LOGGED_OUT_TOKEN.getCode());
+        } catch (InvalidKeyException e) {
+            servletRequest.setAttribute("exception", ExceptionCode.INVALID_AUTHORITIES_TOKEN.getCode());
         } catch (Exception e) {
             servletRequest.setAttribute("exception", ExceptionCode.UNKNOWN_ERROR.getCode());
         }

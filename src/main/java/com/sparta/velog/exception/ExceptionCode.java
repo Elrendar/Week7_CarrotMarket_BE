@@ -12,8 +12,12 @@ public enum ExceptionCode {
             "Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다."),
     WRONG_TOKEN("1004",
             "JWT claims is empty, 잘못된 JWT 토큰 입니다."),
-    UNKNOWN_ERROR("1005", "Unknown error"),
-    ACCESS_DENIED("1006", "접근 거부.");
+    LOGGED_OUT_TOKEN("1005",
+            "로그아웃한 유저입니다."),
+    INVALID_AUTHORITIES_TOKEN("1006",
+            "권한 정보가 없는 토큰입니다."),
+    UNKNOWN_ERROR("1007", "Unknown error"),
+    ACCESS_DENIED("1008", "접근 거부.");
 
     private final String code;
     private final String message;

@@ -6,6 +6,7 @@ import com.sparta.velog.security.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -86,13 +87,13 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
 
-                .antMatchers("/api/users/auth/**").permitAll()
                 .antMatchers("/").permitAll()
-
-                // .antMatchers(HttpMethod.GET, "/boards/**").permitAll()
-                // .antMatchers(HttpMethod.POST, "/boards/**").hasAnyAuthority(Authority.ROLE_USER.name())
-                // .antMatchers(HttpMethod.PUT, "/boards/**").hasAnyAuthority(Authority.ROLE_USER.name())
-                // .antMatchers(HttpMethod.DELETE, "/boards/**").hasAnyAuthority(Authority.ROLE_USER.name())
+                .antMatchers("/api/users/auth/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
+                // .antMatchers(HttpMethod.POST, "/api/posts/**").hasAnyAuthority("ROLE_USER")
+                // .antMatchers(HttpMethod.PUT, "/api/posts/**").hasAnyAuthority("ROLE_USER")
+                // .antMatchers(HttpMethod.PATCH, "/api/posts/**").hasAnyAuthority("ROLE_USER")
+                // .antMatchers(HttpMethod.DELETE, "/api/posts/**").hasAnyAuthority("ROLE_USER")
 
                 // 나머지는 전부 인증 필요
                 .anyRequest().authenticated()

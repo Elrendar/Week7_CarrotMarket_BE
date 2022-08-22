@@ -18,13 +18,13 @@ public class UserResponseDto {
     @NotBlank
     String username;
     String profileImageUrl;
-    String description;
+    String selfDescription;
 
     public static UserResponseDto of(UserEntity userEntity) {
         Assert.notNull(userEntity, "userEntity가 비어있습니다.");
         return UserResponseDto.builder()
                 .username(userEntity.getUsername())
-                .description(userEntity.getDescription())
+                .selfDescription(userEntity.getSelfDescription())
                 .profileImageUrl(userEntity.getProfileImageUrl())
                 .build();
     }

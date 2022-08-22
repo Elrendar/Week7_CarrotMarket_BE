@@ -14,5 +14,5 @@ import lombok.extern.jackson.Jacksonized;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class UserInfoUpdateDto {
     String profileImageUrl;
-    String description;
+    String selfDescription;
 }

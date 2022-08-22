@@ -38,6 +38,14 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         // 토큰이 없거나 이상한 값이 들어온 경우
         else if (exception.equals(ExceptionCode.WRONG_TOKEN.getCode())) {
             setResponse(response, ExceptionCode.WRONG_TOKEN);
+        }
+        // 토큰에 권한 정보가 없는 경우
+        else if (exception.equals(ExceptionCode.INVALID_AUTHORITIES_TOKEN.getCode())) {
+            setResponse(response, ExceptionCode.INVALID_AUTHORITIES_TOKEN);
+        }
+        // 로그아웃한 유저일 경우(db에 userId와 맞는 리프레쉬 토큰이 없는 경우)
+        else if (exception.equals(ExceptionCode.LOGGED_OUT_TOKEN.getCode())) {
+            setResponse(response, ExceptionCode.LOGGED_OUT_TOKEN);
         } else {
             setResponse(response, ExceptionCode.ACCESS_DENIED);
         }
