@@ -2,6 +2,7 @@ package com.sparta.velog.controller;
 
 import com.sparta.velog.dto.*;
 import com.sparta.velog.service.UserService;
+import com.sparta.velog.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;

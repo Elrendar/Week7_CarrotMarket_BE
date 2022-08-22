@@ -38,10 +38,16 @@ public class UserEntity extends TimeStamp {
     @NotBlank
     @JsonIgnore
     private final String authority = "ROLE_USER";
-    @Column
-    String profileImageUrl;
-    @Column
-    String description;
+
+    // 작성글 리스트
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user",
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostEntity> posts;
+
+    // 좋아요를 누른 글 리스트
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user",
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LikeEntity> likePosts;
 
     public static UserEntity of(UserRequestDto userRequestDto, PasswordEncoder passwordEncoder) {
         return UserEntity.builder()
