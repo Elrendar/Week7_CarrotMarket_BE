@@ -25,6 +25,11 @@ public class PostDetailResponseDto {
     String title;
     @NotBlank
     String content;
+
+    // 이미지 url 조회
+    @NotBlank
+    String imageUrl;
+
     @NotBlank
     String username;
     // 작성자 프로필 이미지 url
@@ -50,6 +55,7 @@ public class PostDetailResponseDto {
                 .postId(postEntity.getId())
                 .title(postEntity.getTitle())
                 .content(postEntity.getContent())
+                .imageUrl(postEntity.getImageUrl())
                 .username(postEntity.getUser().getUsername())
                 .profileImageUrl(postEntity.getUser().getProfileImageUrl())
                 .hashtags(hashtags)

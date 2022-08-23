@@ -23,6 +23,8 @@ public class PostListResponseDto {
     @NotBlank
     String content;
     @NotBlank
+    String imageUrl;
+    @NotBlank
     String username;
     @NotBlank
     String profileImageUrl;
@@ -33,6 +35,7 @@ public class PostListResponseDto {
                 .postId(postEntity.getId())
                 .title(postEntity.getTitle())
                 .content(postEntity.getContent())
+                .imageUrl(postEntity.getImageUrl())
                 .username(postEntity.getUser().getUsername())
                 .profileImageUrl(postEntity.getUser().getProfileImageUrl())
                 .likeCount(postEntity.getLikeCount())

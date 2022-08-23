@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,6 +31,8 @@ public class PostService {
     private final PostTagRepository postTagRepository;
     private final LikeRepository likeRepository;
 
+    private final S3Service s3Service;
+
     /* search */
     @Transactional(readOnly = true)
     public List<PostEntity> search(String keyword) {
@@ -39,6 +42,12 @@ public class PostService {
     @Transactional
     public long createPost(long userId,
                            PostRequestDto postRequestDto) {
+        String imageUrl = null;
+
+        if (Objects.nonNull(postRequestDto.getImageFile())) {
+            imageUrl = s3Service.uploadImage(postRequestDto.getImageFile());
+        }
+
         // 작성자 매핑을 위한 UserEntity 객체 생성
         var user = UserEntity.builder()
                 .id(userId)
@@ -47,6 +56,7 @@ public class PostService {
         var newPost = PostEntity.builder()
                 .title(postRequestDto.getTitle())
                 .content(postRequestDto.getContent())
+                .imageUrl(imageUrl)
                 .user(user)
                 .build();
 

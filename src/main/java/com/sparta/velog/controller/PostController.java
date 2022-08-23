@@ -5,6 +5,7 @@ import com.sparta.velog.dto.PostDetailResponseDto;
 import com.sparta.velog.dto.PostListResponseDto;
 import com.sparta.velog.dto.PostRequestDto;
 import com.sparta.velog.service.PostService;
+import com.sparta.velog.service.S3Service;
 import com.sparta.velog.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,12 +17,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/posts")
 @RestController
 public class PostController {
     private final PostService postService;
+
 
     // 작성글 검색
     @GetMapping("/search")
@@ -41,11 +44,13 @@ public class PostController {
 
     // 글 작성하기
     @PostMapping
-    public ResponseEntity<Long> createPost(@RequestBody PostRequestDto postRequestDto) {
+    public ResponseEntity<Long> createPost(PostRequestDto postRequestDto) {
         var userId = SecurityUtil.getCurrentUserIdByLong();
+
         return ResponseEntity.ok(
                 postService.createPost(userId, postRequestDto));
     }
+    //return 값 Long으로 할지, postEntity로 할지.
 
     // 글 읽기
     @GetMapping("/{postId}")
