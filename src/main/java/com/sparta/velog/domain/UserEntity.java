@@ -36,6 +36,9 @@ public class UserEntity extends TimeStamp {
     @NotNull
     private String selfDescription;
     @Column
+    @NotNull
+    private String myVelogName;
+    @Column
     @NotBlank
     @JsonIgnore
     private final String authority = "ROLE_USER";
@@ -55,6 +58,7 @@ public class UserEntity extends TimeStamp {
                 .username(userRequestDto.getUsername())
                 .password(passwordEncoder.encode(userRequestDto.getPassword1()))
                 .selfDescription("")
+                .myVelogName(userRequestDto.getUsername() + "의 벨로그")
                 .build();
     }
 
@@ -64,6 +68,9 @@ public class UserEntity extends TimeStamp {
         }
         if (requestDto.getSelfDescription() != null) {
             this.selfDescription = requestDto.getSelfDescription();
+        }
+        if (requestDto.getMyVelogName() != null) {
+            this.myVelogName = requestDto.getMyVelogName();
         }
     }
 }
