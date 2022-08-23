@@ -49,7 +49,7 @@ public class PostDetailResponseDto {
         var postTags = postEntity.getPostTags();
         var hashtags = new ArrayList<String>();
         for (var postTag : postTags) {
-            hashtags.add(postTag.getHashtag().getTag());
+            hashtags.add(postTag.getTag().getTagString());
         }
         return PostDetailResponseDto.builder()
                 .postId(postEntity.getId())

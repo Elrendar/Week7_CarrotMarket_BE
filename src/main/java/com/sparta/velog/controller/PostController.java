@@ -61,8 +61,8 @@ public class PostController {
 
     // 글 수정하기
     @PutMapping("/{postId}")
-    public ResponseEntity<PostDetailResponseDto> updatePost(@PathVariable long postId,
-                                                            @RequestBody PostRequestDto postRequestDto) {
+    public ResponseEntity<Long> updatePost(@PathVariable long postId,
+                                           @RequestBody PostRequestDto postRequestDto) {
         var userId = SecurityUtil.getCurrentUserIdByLong();
         return ResponseEntity.ok(
                 postService.updatePost(userId, postId, postRequestDto));

@@ -110,6 +110,7 @@ public class TokenProvider {
                 .accessTokenLifetime(this.ACCESS_TOKEN_LIFETIME_IN_MS)
                 .refreshToken(refreshToken)
                 .refreshTokenLifetime(this.REFRESH_TOKEN_LIFETIME_IN_MS)
+                .username(authentication.getName())
                 .build();
     }
 
@@ -120,6 +121,7 @@ public class TokenProvider {
                 .accessTokenLifetime(1L)
                 .refreshToken("logout")
                 .refreshTokenLifetime(1L)
+                .username("guest")
                 .build();
     }
 
