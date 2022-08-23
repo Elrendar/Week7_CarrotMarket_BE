@@ -27,10 +27,10 @@ public class PostController {
 
 
     // 작성글 검색
-    @GetMapping("/search")
-    public Model search(String keyword, Model model) {
-        List<PostEntity> searchList = postService.search(keyword);
-        return model.addAttribute("searchList", searchList);
+    // 작성글 검색
+    @GetMapping
+    public ResponseEntity<List<PostEntity>> search(@RequestParam(name = "query") String keyword) {
+        return ResponseEntity.ok(postService.search(keyword));
     }
 
     // 글 목록 불러오기
