@@ -22,6 +22,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -164,5 +165,19 @@ public class UserService {
                 );
         user.updateInfo(userInfoUpdateDto);
         return UserResponseDto.of(user);
+    }
+
+    @Transactional
+    public UserResponseDto getMyInfo() {
+        //저장된 유저 정보
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //유저 정보 있는지 확인
+        if(authentication == null || authentication.getName() == null) {
+            throw new RuntimeException("Security Context에 인증 정보가 없습니다");
+        }
+        //토큰에서 유저 네임으로 찾은 유저 정보 정보 중 Dto에 해당하는 필드 가져오기 (여기선 유저 네임)
+        return userRepository.findByUsername(authentication.getName())
+                .map(UserResponseDto::of)
+                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다"));
     }
 }
