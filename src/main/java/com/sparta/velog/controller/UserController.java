@@ -58,6 +58,11 @@ public class UserController {
     @PatchMapping("/myinfo")
     public ResponseEntity<UserResponseDto> updateMyInfo(@RequestBody UserInfoUpdateDto userInfoUpdateDto) {
         var userId = SecurityUtil.getCurrentUserIdByLong();
+
+        if (userInfoUpdateDto.getSelfDescription() == null &&
+                userInfoUpdateDto.getProfileImageUrl() == null) {
+            return ResponseEntity.ok(userService.getUserInfo(userId));
+        }
         return ResponseEntity.ok(userService.updateUserInfo(userId, userInfoUpdateDto));
     }
 }

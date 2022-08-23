@@ -49,7 +49,7 @@ public class TokenProvider {
 
     // yml에 저장한 secret key와 토큰 지속시간 가져오기
     public TokenProvider(
-            @Value("${jwt.secret}") String secretKey,
+            @Value("${jwt.secret-key}") String secretKey,
             @Value("${jwt.access-token-lifetime-in-seconds}") long accessTokenLifetimeInSeconds,
             @Value("${jwt.refresh-token-lifetime-in-seconds}") long refreshTokenLifetimeInSeconds,
             RefreshTokenRepository refreshTokenRepository) {
@@ -110,6 +110,7 @@ public class TokenProvider {
                 .accessTokenLifetime(this.ACCESS_TOKEN_LIFETIME_IN_MS)
                 .refreshToken(refreshToken)
                 .refreshTokenLifetime(this.REFRESH_TOKEN_LIFETIME_IN_MS)
+                .username(authentication.getName())
                 .build();
     }
 
@@ -120,6 +121,7 @@ public class TokenProvider {
                 .accessTokenLifetime(1L)
                 .refreshToken("logout")
                 .refreshTokenLifetime(1L)
+                .username("guest")
                 .build();
     }
 

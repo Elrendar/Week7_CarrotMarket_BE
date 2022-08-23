@@ -12,16 +12,16 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Getter
-public class HashtagEntity extends TimeStamp {
+public class TagEntity extends TimeStamp {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "hashtag_id")
+    @Column(name = "tag_id")
     private Long id;
     @Column
     @NotBlank
-    private String tag;
+    private String tagString;
 
     // 이 태그가 달린 게시글들
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "hashtag", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "tag", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostTagEntity> postTags;
 }
