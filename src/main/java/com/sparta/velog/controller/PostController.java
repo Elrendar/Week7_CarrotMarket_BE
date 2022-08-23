@@ -5,7 +5,6 @@ import com.sparta.velog.dto.PostDetailResponseDto;
 import com.sparta.velog.dto.PostListResponseDto;
 import com.sparta.velog.dto.PostRequestDto;
 import com.sparta.velog.service.PostService;
-import com.sparta.velog.service.S3Service;
 import com.sparta.velog.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,11 +12,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/posts")
@@ -25,10 +22,8 @@ import java.util.Objects;
 public class PostController {
     private final PostService postService;
 
-
     // 작성글 검색
-    // 작성글 검색
-    @GetMapping
+    @GetMapping("/search")
     public ResponseEntity<List<PostEntity>> search(@RequestParam(name = "query") String keyword) {
         return ResponseEntity.ok(postService.search(keyword));
     }
@@ -50,7 +45,6 @@ public class PostController {
         return ResponseEntity.ok(
                 postService.createPost(userId, postRequestDto));
     }
-    //return 값 Long으로 할지, postEntity로 할지.
 
     // 글 읽기
     @GetMapping("/{postId}")
