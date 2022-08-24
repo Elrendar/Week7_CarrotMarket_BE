@@ -26,6 +26,7 @@ public class PostEntity extends TimeStamp {
     private String content;
 
     // 이미지 추가
+    @Setter
     @Column(nullable = false)
     private String imageUrl;
 

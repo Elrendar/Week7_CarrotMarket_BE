@@ -110,6 +110,22 @@ public class PostService {
         post.setTitle(postRequestDto.getTitle());
         post.setContent(postRequestDto.getContent());
 
+        // 이미지 수정
+        String imageUrl = null;
+
+        // 새로운 이미지가 있으면 새로운 파일을 넣고 기존 파일 삭제
+        if (Objects.nonNull(postRequestDto.getImageFile())) {
+            // 새로운 이미지 파일 s3 버킷 저장
+            imageUrl = s3Service.uploadImage(postRequestDto.getImageFile());
+            // 기존 이미지 파일 삭제 (내부에 Url -> filename 으로 분리 로직 존재)
+            s3Service.deleteObjectByImageUrl(post.getImageUrl());
+        } else {
+            // 이미지 파일이 Null 값이면 기존 이미지 그대로 사용함.
+            imageUrl = post.getImageUrl();
+        }
+
+        post.setImageUrl(imageUrl);
+
         // 기존 태그목록 비어있지 않으면
         if (!post.getPostTags().isEmpty()) {
             // 모든 태그 삭제
@@ -134,6 +150,9 @@ public class PostService {
         }
 
         postRepository.delete(post);
+
+        // s3 버킷에서 기존 이미지 삭제
+        s3Service.deleteObjectByImageUrl(post.getImageUrl());
     }
 
     @Transactional

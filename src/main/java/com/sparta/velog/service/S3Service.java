@@ -79,6 +79,14 @@ public class S3Service {
         s3Client.deleteObject(bucket, sourceKey);
     }
 
+    //DB에 있는 값을 그대로 사용하기 위하여 새로운 메소드 생성
+    public void deleteObjectByImageUrl(String imageUrl) {
+        //split을 통해 나누고 나눈 length에서 1을 빼서 마지막 값(파일명)을 사용함.
+        String sourceKey = imageUrl.split("/")[imageUrl.split("/").length - 1];
+        //소스키로 s3에서 삭제
+        s3Client.deleteObject(bucket, sourceKey);
+    }
+
     public void deleteObjects(List<DeleteObjectsRequest.KeyVersion> object_keys) {
         DeleteObjectsRequest dor = new DeleteObjectsRequest(bucket)
                 .withKeys(object_keys);
