@@ -1,6 +1,7 @@
 package com.sparta.velog.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sparta.velog.dto.ProfileImageDto;
 import com.sparta.velog.dto.UserInfoUpdateDto;
 import com.sparta.velog.dto.UserRequestDto;
 import lombok.*;
@@ -57,9 +58,9 @@ public class UserEntity extends TimeStamp {
                 .build();
     }
 
-    public void updateInfo(UserInfoUpdateDto requestDto) {
-        if (requestDto.getProfileImageUrl() != null) {
-            this.profileImageUrl = requestDto.getProfileImageUrl();
+    public void updateInfo(UserInfoUpdateDto requestDto, ProfileImageDto profileImageDto) {
+        if (profileImageDto.getProfileImageUrl() != null) {
+            this.profileImageUrl = profileImageDto.getProfileImageUrl();
         }
         if (requestDto.getSelfDescription() != null) {
             this.selfDescription = requestDto.getSelfDescription();

@@ -28,6 +28,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -37,6 +39,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+
+    private final S3Service s3Service;
 
     @Transactional
     public UserResponseDto signUp(UserRequestDto userRequestDto) {
@@ -158,12 +162,21 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDto updateUserInfo(Long userId, UserInfoUpdateDto userInfoUpdateDto) {
+    public UserResponseDto updateUserInfo(Long userId, UserInfoUpdateDto userInfoUpdateDto, ProfileImageDto profileImageDto) {
         var user = userRepository.findById(userId)
                 .orElseThrow(
                         () -> new UsernameNotFoundException("userId: " + userId + "는 존재하지 않는 아이디입니다.")
                 );
-        user.updateInfo(userInfoUpdateDto);
+        String profileImageUrl = null;
+
+        if (Objects.nonNull(userInfoUpdateDto.getProfileImage())){
+            profileImageUrl = s3Service.uploadImage(userInfoUpdateDto.getProfileImage());
+        }
+
+        // 이미지 주소 저장.
+        profileImageDto.setProfileImageUrl(profileImageUrl);
+
+        user.updateInfo(userInfoUpdateDto, profileImageDto);
         return UserResponseDto.of(user);
     }
 

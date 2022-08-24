@@ -56,13 +56,13 @@ public class UserController {
 
     // 유저 정보 수정하기
     @PatchMapping("/myinfo")
-    public ResponseEntity<UserResponseDto> updateMyInfo(@RequestBody UserInfoUpdateDto userInfoUpdateDto) {
+    public ResponseEntity<UserResponseDto> updateMyInfo(UserInfoUpdateDto userInfoUpdateDto, ProfileImageDto profileImageDto) {
         var userId = SecurityUtil.getCurrentUserIdByLong();
 
         if (userInfoUpdateDto.getSelfDescription() == null &&
-                userInfoUpdateDto.getProfileImageUrl() == null) {
+                profileImageDto.getProfileImageUrl() == null) {
             return ResponseEntity.ok(userService.getUserInfo(userId));
         }
-        return ResponseEntity.ok(userService.updateUserInfo(userId, userInfoUpdateDto));
+        return ResponseEntity.ok(userService.updateUserInfo(userId, userInfoUpdateDto,profileImageDto));
     }
 }
