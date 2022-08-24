@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 @Getter
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class TokenDto {
-
     @NotBlank
     String grantType;
     @NotBlank
@@ -35,16 +34,19 @@ public class TokenDto {
     String refreshTokenLifetime;
     @NotBlank
     String refreshTokenExpireDate;
+    @NotBlank
+    String username;
 
     @Jacksonized
     @Builder
     public TokenDto(String grantType, String accessToken, String refreshToken
-            , Long accessTokenLifetime, Long refreshTokenLifetime) {
+            , Long accessTokenLifetime, Long refreshTokenLifetime, String username) {
         this.grantType = grantType;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.accessTokenLifetimeInMs = accessTokenLifetime;
         this.refreshTokenLifetimeInMs = refreshTokenLifetime;
+        this.username = username;
 
         // 토큰 유효시간 MM min, SS sec의 형태로 저장
         this.accessTokenLifetime = String.format("%02d min, %02d sec",

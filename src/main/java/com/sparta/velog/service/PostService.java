@@ -94,37 +94,31 @@ public class PostService {
 
 
     @Transactional
-    public PostDetailResponseDto updatePost(long userId, long postId,
-                                            PostRequestDto postRequestDto) {
+    public long updatePost(long currentUserId, long postId,
+                           PostRequestDto postRequestDto) {
+        // 수정할 글 불러오기
         var post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException(
                         "postId: " + postId + "인 글이 존재하지 않습니다.")
                 );
         // 로그인한 유저가 작성자와 동일한 유저인지 확인
-        if (userId != post.getUserId()) {
+        if (currentUserId != post.getUserId()) {
             throw new UnAuthorizedException("자신이 작성한 글만 수정 가능합니다!");
         }
 
-        var postTags = post.getPostTags();
-        var newTags = postRequestDto.getTags();
+        // 제목과 내용 수정
+        post.setTitle(postRequestDto.getTitle());
+        post.setContent(postRequestDto.getContent());
 
-        // 기존 태그목록이 비어있고
-        if (postTags.isEmpty()) {
-            // 새로운 태그목록이 비어있지 않다면
-            if (newTags != null) {
-                // 새 태그를 생성해서 추가
-                createPostTag(post, createHashTag(newTags));
-            }
-            return PostDetailResponseDto.of(postRepository.save(post).update(postRequestDto));
+        // 기존 태그목록 비어있지 않으면
+        if (!post.getPostTags().isEmpty()) {
+            // 모든 태그 삭제
+            postTagRepository.deleteAllByPostId(postId);
         }
 
-        // 모든 태그 삭제
-        postTagRepository.deleteAllByPostId(postId);
-        postTags.clear();
-
         // 새로운 태그를 생성해서 추가
-        createPostTag(post, createHashTag(newTags));
-        return PostDetailResponseDto.of(postRepository.save(post).update(postRequestDto));
+        createPostTag(post, createHashTag(postRequestDto.getTags()));
+        return post.getId();
     }
 
     @Transactional
@@ -179,25 +173,25 @@ public class PostService {
         return post.addLikeCount();
     }
 
-    protected List<HashtagEntity> createHashTag(List<String> tags) {
+    private List<TagEntity> createHashTag(List<String> tags) {
         if (tags == null) {
             return null;
         }
 
         // 태그 List<string>를 HashtagEntity로 변환해서 db에 저장
-        var hashtags = new ArrayList<HashtagEntity>();
+        var newTags = new ArrayList<TagEntity>();
         for (var tag : tags) {
-            var newHashtag = HashtagEntity.builder()
-                    .tag(tag)
+            var newTag = TagEntity.builder()
+                    .tagString(tag)
                     .build();
-            hashtags.add(newHashtag);
+            newTags.add(newTag);
         }
-        return hashtagRepository.saveAll(hashtags);
+        return hashtagRepository.saveAll(newTags);
     }
 
-    protected void createPostTag(PostEntity post,
-                                 List<HashtagEntity> hashtags) {
-        if (hashtags == null) {
+    private void createPostTag(PostEntity post,
+                               List<TagEntity> tags) {
+        if (tags == null) {
             return;
         }
 
@@ -207,17 +201,18 @@ public class PostService {
 
         // post와 hashtag 간의 다대다 매핑을 연결해줄 중간 테이블 PostTag 생성해서 저장
         var postTags = new ArrayList<PostTagEntity>();
-        for (var hashtag : hashtags) {
+        for (var tag : tags) {
             var postTag = PostTagEntity.builder()
                     .post(post)
-                    .hashtag(hashtag)
+                    .tag(tag)
                     .build();
             postTags.add(postTag);
         }
-        postTagRepository.saveAll(postTags);
-        // post.setPostTags(postTags);
+        var savedPostTags = postTagRepository.saveAll(postTags);
 
-        // var savedPostTags = postTagRepository.saveAll(postTags);
-        // post.setPostTags(savedPostTags);
+        if (post.getPostTags() != null) {
+            post.getPostTags().clear();
+            post.getPostTags().addAll(savedPostTags);
+        }
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -28,7 +29,7 @@ public class S3Service {
     @Value("${cloud.aws.credentials.accessKey}")
     private String accessKey;
 
-    @Value(("${cloud.aws.credentials.secretkey}"))
+    @Value("${cloud.aws.credentials.secretkey}")
     private String secretKey;
 
     @Value("${cloud.aws.s3.bucket}")
@@ -49,7 +50,7 @@ public class S3Service {
 
     public String uploadImage(MultipartFile file) {
 
-        String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename().toLowerCase();
+        String fileName = UUID.randomUUID() + "-" + Objects.requireNonNull(file.getOriginalFilename()).toLowerCase();
         try {
             // 확장자 점검
             if (!(fileName.endsWith(".bmp") || fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png"))) {

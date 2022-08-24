@@ -25,11 +25,9 @@ public class PostDetailResponseDto {
     String title;
     @NotBlank
     String content;
-
     // 이미지 url 조회
     @NotBlank
     String imageUrl;
-
     @NotBlank
     String username;
     // 작성자 프로필 이미지 url
@@ -49,7 +47,7 @@ public class PostDetailResponseDto {
         var postTags = postEntity.getPostTags();
         var hashtags = new ArrayList<String>();
         for (var postTag : postTags) {
-            hashtags.add(postTag.getHashtag().getTag());
+            hashtags.add(postTag.getTag().getTagString());
         }
         return PostDetailResponseDto.builder()
                 .postId(postEntity.getId())
