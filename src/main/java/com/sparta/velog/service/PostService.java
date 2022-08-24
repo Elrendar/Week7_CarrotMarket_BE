@@ -6,10 +6,7 @@ import com.sparta.velog.dto.PostListResponseDto;
 import com.sparta.velog.dto.PostRequestDto;
 import com.sparta.velog.exception.UnAuthorizedException;
 import com.sparta.velog.exception.runtime.PostNotFoundException;
-import com.sparta.velog.repository.HashtagRepository;
-import com.sparta.velog.repository.LikeRepository;
-import com.sparta.velog.repository.PostRepository;
-import com.sparta.velog.repository.PostTagRepository;
+import com.sparta.velog.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -19,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,6 +26,7 @@ public class PostService {
     private final HashtagRepository hashtagRepository;
     private final PostTagRepository postTagRepository;
     private final LikeRepository likeRepository;
+    private final PostImageRepository postImageRepository;
 
     private final S3Service s3Service;
 
@@ -42,34 +39,44 @@ public class PostService {
     @Transactional
     public long createPost(long userId,
                            PostRequestDto postRequestDto) {
-        String imageUrl = null;
-
-        if (Objects.nonNull(postRequestDto.getImageFile())) {
-            imageUrl = s3Service.uploadImage(postRequestDto.getImageFile());
-        }
-
         // 작성자 매핑을 위한 UserEntity 객체 생성
         var user = UserEntity.builder()
                 .id(userId)
                 .build();
-        // 작성글
-        var newPost = PostEntity.builder()
+        // 작성글 생성
+        var post = PostEntity.builder()
                 .title(postRequestDto.getTitle())
                 .content(postRequestDto.getContent())
-                .imageUrl(imageUrl)
                 .user(user)
                 .build();
 
         // 작성글 저장
-        newPost = postRepository.save(newPost);
+        post = postRepository.save(post);
 
+        // 이미지 업로드 부분
+        // 업로드할 이미지 파일이 있는지 확인
+        if (postRequestDto.getImageFiles() != null) {
+            for (var imageFile : postRequestDto.getImageFiles()) {
+                // 이미지를 s3에 업로드 하고
+                var uploadedImageUrl = s3Service.uploadImage(imageFile);
+                // db에 저장
+                postImageRepository.save(
+                        PostImageEntity.builder()
+                                .url(uploadedImageUrl)
+                                .post(post)
+                                .user(user)
+                                .build());
+            }
+        }
+
+        // 태그 추가 부분
         // 태그가 null이 아니라면
         if (postRequestDto.getTags() != null) {
             // HashtagEntity 생성해서 저장하고, 작성글과 해쉬태그를 토대로 PostTagEntity 생성해서 저장
-            createPostTag(newPost, createHashTag(postRequestDto.getTags()));
+            createPostTag(post, createHashTag(postRequestDto.getTags()));
         }
 
-        return newPost.getId();
+        return post.getId();
     }
 
     @Transactional(readOnly = true)
@@ -110,21 +117,39 @@ public class PostService {
         post.setTitle(postRequestDto.getTitle());
         post.setContent(postRequestDto.getContent());
 
-        // 이미지 수정
-        String imageUrl = null;
+        // // 이미지 수정
+        // String imageUrl = null;
 
-        // 새로운 이미지가 있으면 새로운 파일을 넣고 기존 파일 삭제
-        if (Objects.nonNull(postRequestDto.getImageFile())) {
-            // 새로운 이미지 파일 s3 버킷 저장
-            imageUrl = s3Service.uploadImage(postRequestDto.getImageFile());
+        // // 새로운 이미지가 있으면 새로운 파일을 넣고 기존 파일 삭제
+        // if (Objects.nonNull(postRequestDto.getImageFiles())) {
+        //     // 새로운 이미지 파일 s3 버킷 저장
+        //     imageUrl = s3Service.uploadImage(postRequestDto.getImageFiles().get(0));
+        // } else {
+        //     // 이미지 파일이 Null 값이면 기존 이미지 그대로 사용함.
+        //     // imageUrl = post.getImageUrl();
+        // }
+
+        // 업로드할 이미지 파일이 있는지 확인
+        if (postRequestDto.getImageFiles() != null) {
+            // 기존 이미지 모두 삭제
+            var deletedImages = postImageRepository.deleteAllByPostId(postId);
             // 기존 이미지 파일 삭제 (내부에 Url -> filename 으로 분리 로직 존재)
-            s3Service.deleteObjectByImageUrl(post.getImageUrl());
-        } else {
-            // 이미지 파일이 Null 값이면 기존 이미지 그대로 사용함.
-            imageUrl = post.getImageUrl();
+            for (var postImage : deletedImages) {
+                s3Service.deleteObjectByImageUrl(postImage.getUrl());
+            }
+            // 새로운 이미지 추가
+            for (var imageFile : postRequestDto.getImageFiles()) {
+                // 이미지를 s3에 업로드 하고
+                var uploadedImageUrl = s3Service.uploadImage(imageFile);
+                // db에 저장
+                postImageRepository.save(
+                        PostImageEntity.builder()
+                                .url(uploadedImageUrl)
+                                .post(post)
+                                .user(post.getUser())
+                                .build());
+            }
         }
-
-        post.setImageUrl(imageUrl);
 
         // 기존 태그목록 비어있지 않으면
         if (!post.getPostTags().isEmpty()) {
@@ -149,10 +174,12 @@ public class PostService {
             throw new UnAuthorizedException("자신이 작성한 글만 삭제 가능합니다!");
         }
 
-        postRepository.delete(post);
-
         // s3 버킷에서 기존 이미지 삭제
-        s3Service.deleteObjectByImageUrl(post.getImageUrl());
+        for (var postImage : post.getImages()) {
+            s3Service.deleteObjectByImageUrl(postImage.getUrl());
+        }
+
+        postRepository.delete(post);
     }
 
     @Transactional

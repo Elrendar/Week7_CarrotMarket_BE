@@ -30,10 +30,9 @@ public class PostController {
 
     // 글 목록 불러오기
     @GetMapping
-    public ResponseEntity<Page<PostListResponseDto>> getPostPages(@RequestParam(required = false) String searchKeyword,
-                                                                  @PageableDefault(size = 5,
-                                                                          sort = "createdAt",
-                                                                          direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseEntity<Page<PostListResponseDto>> getPostPages(
+            @RequestParam(required = false) String searchKeyword,
+            @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(postService.getPostPages(searchKeyword, pageable));
     }
 
@@ -41,25 +40,20 @@ public class PostController {
     @PostMapping
     public ResponseEntity<Long> createPost(PostRequestDto postRequestDto) {
         var userId = SecurityUtil.getCurrentUserIdByLong();
-
-        return ResponseEntity.ok(
-                postService.createPost(userId, postRequestDto));
+        return ResponseEntity.ok(postService.createPost(userId, postRequestDto));
     }
 
     // 글 읽기
     @GetMapping("/{postId}")
     public ResponseEntity<PostDetailResponseDto> readPost(@PathVariable long postId) {
-        return ResponseEntity.ok(
-                postService.readPost(postId));
+        return ResponseEntity.ok(postService.readPost(postId));
     }
 
     // 글 수정하기
     @PutMapping("/{postId}")
-    public ResponseEntity<Long> updatePost(@PathVariable long postId,
-                                           PostRequestDto postRequestDto) {
+    public ResponseEntity<Long> updatePost(@PathVariable long postId, PostRequestDto postRequestDto) {
         var userId = SecurityUtil.getCurrentUserIdByLong();
-        return ResponseEntity.ok(
-                postService.updatePost(userId, postId, postRequestDto));
+        return ResponseEntity.ok(postService.updatePost(userId, postId, postRequestDto));
     }
 
     // 글 삭제하기

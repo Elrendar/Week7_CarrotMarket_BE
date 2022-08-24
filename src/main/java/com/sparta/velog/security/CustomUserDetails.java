@@ -16,15 +16,10 @@ public class CustomUserDetails implements UserDetails, CredentialsContainer {
     private final String username;
     private String password;
     private final long userId;
-
     private final Set<GrantedAuthority> authorities;
-
     private final boolean accountNonExpired;
-
     private final boolean accountNonLocked;
-
     private final boolean credentialsNonExpired;
-
     private final boolean enabled;
 
     public CustomUserDetails(String username, String password,

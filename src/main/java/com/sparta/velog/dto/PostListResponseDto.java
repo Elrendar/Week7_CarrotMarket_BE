@@ -23,7 +23,7 @@ public class PostListResponseDto {
     @NotBlank
     String content;
     @NotBlank
-    String imageUrl;
+    String thumbnailUrl;
     @NotBlank
     String username;
     @NotBlank
@@ -31,11 +31,18 @@ public class PostListResponseDto {
     int likeCount;
 
     public static PostListResponseDto of(PostEntity postEntity) {
+        var firstImage = "";
+        if (postEntity.getImages() != null) {
+            if (postEntity.getImages().size() > 0) {
+                firstImage = postEntity.getImages().get(0).getUrl();
+            }
+        }
+
         return PostListResponseDto.builder()
                 .postId(postEntity.getId())
                 .title(postEntity.getTitle())
                 .content(postEntity.getContent())
-                .imageUrl(postEntity.getImageUrl())
+                .thumbnailUrl(firstImage)
                 .username(postEntity.getUser().getUsername())
                 .profileImageUrl(postEntity.getUser().getProfileImageUrl())
                 .likeCount(postEntity.getLikeCount())

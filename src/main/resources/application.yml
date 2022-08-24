@@ -24,10 +24,12 @@ spring:
   web:
     resources:
       add-mappings: false
-
   profiles:
     include: KEYS
-
+  servlet:
+    multipart:
+      maxFileSize: 10MB
+      maxRequestSize: 50MB
 logging:
   level:
     com.sparta.velog: debug
@@ -37,4 +39,3 @@ logging:
           descriptor:
             sql: trace
             BasicBinder: trace
-

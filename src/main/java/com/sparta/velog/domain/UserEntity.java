@@ -1,8 +1,6 @@
 package com.sparta.velog.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sparta.velog.dto.ProfileImageDto;
-import com.sparta.velog.dto.UserInfoUpdateDto;
 import com.sparta.velog.dto.UserRequestDto;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -53,6 +52,11 @@ public class UserEntity extends TimeStamp {
             cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LikeEntity> likePosts;
 
+    // 작성글 사진 리스트
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user",
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostImageEntity> postImages = new ArrayList<>();
+
     public static UserEntity of(UserRequestDto userRequestDto, PasswordEncoder passwordEncoder) {
         return UserEntity.builder()
                 .username(userRequestDto.getUsername())
@@ -62,15 +66,17 @@ public class UserEntity extends TimeStamp {
                 .build();
     }
 
-    public void updateInfo(UserInfoUpdateDto requestDto, ProfileImageDto profileImageDto) {
-        if (profileImageDto.getProfileImageUrl() != null) {
-            this.profileImageUrl = profileImageDto.getProfileImageUrl();
+    public void updateInfo(String profileImageUrl, String selfDescription, String myVelogName) {
+        if (profileImageUrl != null) {
+            this.profileImageUrl = profileImageUrl;
         }
-        if (requestDto.getSelfDescription() != null) {
-            this.selfDescription = requestDto.getSelfDescription();
+
+        if (selfDescription != null) {
+            this.selfDescription = selfDescription;
         }
-        if (requestDto.getMyVelogName() != null) {
-            this.myVelogName = requestDto.getMyVelogName();
+
+        if (myVelogName != null) {
+            this.myVelogName = myVelogName;
         }
     }
 }

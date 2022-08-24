@@ -56,7 +56,7 @@ public class UserController {
 
     // 유저 정보 수정하기
     @PatchMapping("/myinfo")
-    public ResponseEntity<UserResponseDto> updateMyInfo(@RequestBody UserInfoUpdateDto userInfoUpdateDto, ProfileImageDto profileImageDto) {
+    public ResponseEntity<UserResponseDto> updateMyInfo(UserInfoUpdateDto userInfoUpdateDto) {
         var userId = SecurityUtil.getCurrentUserIdByLong();
 
         if (userInfoUpdateDto.getSelfDescription() == null
@@ -64,6 +64,6 @@ public class UserController {
                 && userInfoUpdateDto.getMyVelogName() == null) {
             return ResponseEntity.ok(userService.getUserInfo(userId));
         }
-        return ResponseEntity.ok(userService.updateUserInfo(userId, userInfoUpdateDto,profileImageDto));
+        return ResponseEntity.ok(userService.updateUserInfo(userId, userInfoUpdateDto));
     }
 }
