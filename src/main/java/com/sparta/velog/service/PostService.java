@@ -4,6 +4,7 @@ import com.sparta.velog.domain.*;
 import com.sparta.velog.dto.PostDetailResponseDto;
 import com.sparta.velog.dto.PostListResponseDto;
 import com.sparta.velog.dto.PostRequestDto;
+import com.sparta.velog.dto.PostResposeSearchDto;
 import com.sparta.velog.exception.UnAuthorizedException;
 import com.sparta.velog.exception.runtime.PostNotFoundException;
 import com.sparta.velog.repository.*;
@@ -30,12 +31,7 @@ public class PostService {
 
     private final S3Service s3Service;
 
-    // /* search */
-    // @Transactional(readOnly = true)
-    // public List<PostListResponseDto> search(String keyword) {
-    //     return postRepository.findByTitleContaining(keyword).map(PostListResponseDto::of);
-    // }
-
+    /* search */
     @Transactional(readOnly = true)
     public Page<PostListResponseDto> getPostPages(String searchKeyword, Pageable pageable) {
         // 검색어가 없으면 그냥 전체글을 반환
@@ -45,6 +41,27 @@ public class PostService {
         // 검색어가 있으면
         return postRepository.findByTitleContaining(searchKeyword, pageable).map(PostListResponseDto::of);
     }
+        public List<PostResposeSearchDto> search(String keyword) {
+        List<PostEntity> postEntities = postRepository.findByTitleContaining(keyword);
+        List<PostResposeSearchDto> postListResponseDto = new ArrayList<>();
+        if(postEntities.isEmpty())return postListResponseDto;
+        for(PostEntity postEntity : postEntities){
+            postListResponseDto.add(this.convertEntityToDto(postEntity));
+        }
+        return postListResponseDto;
+    }
+
+    private PostResposeSearchDto convertEntityToDto(PostEntity postEntities) {
+        return PostResposeSearchDto.builder()
+                .userId(postEntities.getUserId())
+                .postId(postEntities.getId())
+                .title(postEntities.getTitle())
+                .content(postEntities.getContent())
+                .profileImageUrl(postEntities.getImageUrl())
+                .likeCount(postEntities.getLikeCount())
+                .build();
+    }
+
 
     @Transactional
     public long createPost(long userId, PostRequestDto postRequestDto) {

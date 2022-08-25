@@ -3,6 +3,7 @@ package com.sparta.velog.controller;
 import com.sparta.velog.dto.PostDetailResponseDto;
 import com.sparta.velog.dto.PostListResponseDto;
 import com.sparta.velog.dto.PostRequestDto;
+import com.sparta.velog.dto.PostResposeSearchDto;
 import com.sparta.velog.service.PostService;
 import com.sparta.velog.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,12 @@ public class PostController {
     // public ResponseEntity<List<PostEntity>> search(@RequestParam(name = "query") String keyword) {
     //     return ResponseEntity.ok(postService.search(keyword));
     // }
+    // 작성글 검색
+    @GetMapping("/search")
+    public ResponseEntity<List<PostResposeSearchDto>> search(@RequestParam(name = "query") String keyword) {
+        List<PostResposeSearchDto> boardDtoList = postService.search(keyword);
+        return ResponseEntity.ok(postService.search(keyword));
+    }
 
     // 글 목록 불러오기
     @GetMapping
