@@ -19,6 +19,7 @@ public class UserResponseDto {
     String username;
     String profileImageUrl;
     String selfDescription;
+    String myVelogName;
 
     public static UserResponseDto of(UserEntity userEntity) {
         Assert.notNull(userEntity, "userEntity가 비어있습니다.");
@@ -26,6 +27,7 @@ public class UserResponseDto {
                 .username(userEntity.getUsername())
                 .selfDescription(userEntity.getSelfDescription())
                 .profileImageUrl(userEntity.getProfileImageUrl())
+                .myVelogName(userEntity.getMyVelogName())
                 .build();
     }
 }

@@ -1,6 +1,5 @@
 package com.sparta.velog.dto;
 
-import com.sparta.velog.domain.PostEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,13 +18,10 @@ import java.util.List;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class PostRequestDto {
     @NotBlank
-    String title;
+    private String title;
     @NotBlank
-    String content;
-
-    //이미지 추가
-    @NotBlank
-    private MultipartFile imageFile;
-
-    List<String> tags;
+    private String content;
+    // 이미지 추가
+    private List<MultipartFile> imageFiles;
+    private List<String> tags;
 }

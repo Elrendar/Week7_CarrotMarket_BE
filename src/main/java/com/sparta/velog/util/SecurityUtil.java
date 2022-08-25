@@ -22,7 +22,7 @@ public class SecurityUtil {
 
         long userId = 0L;
         if (authentication.getPrincipal() instanceof UserDetails) {
-            var springSecurityUser = (CustomUserDetails) authentication.getPrincipal();
+            CustomUserDetails springSecurityUser = (CustomUserDetails) authentication.getPrincipal();
             userId = springSecurityUser.getUserId();
         }
 

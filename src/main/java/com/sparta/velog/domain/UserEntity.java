@@ -1,7 +1,6 @@
 package com.sparta.velog.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sparta.velog.dto.UserInfoUpdateDto;
 import com.sparta.velog.dto.UserRequestDto;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -9,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -35,6 +35,9 @@ public class UserEntity extends TimeStamp {
     @NotNull
     private String selfDescription;
     @Column
+    @NotNull
+    private String myVelogName;
+    @Column
     @NotBlank
     @JsonIgnore
     private final String authority = "ROLE_USER";
@@ -49,20 +52,31 @@ public class UserEntity extends TimeStamp {
             cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LikeEntity> likePosts;
 
+    // 작성글 사진 리스트
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user",
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostImageEntity> postImages = new ArrayList<>();
+
     public static UserEntity of(UserRequestDto userRequestDto, PasswordEncoder passwordEncoder) {
         return UserEntity.builder()
                 .username(userRequestDto.getUsername())
                 .password(passwordEncoder.encode(userRequestDto.getPassword1()))
                 .selfDescription("")
+                .myVelogName(userRequestDto.getUsername() + "의 벨로그")
                 .build();
     }
 
-    public void updateInfo(UserInfoUpdateDto requestDto) {
-        if (requestDto.getProfileImageUrl() != null) {
-            this.profileImageUrl = requestDto.getProfileImageUrl();
+    public void updateInfo(String profileImageUrl, String selfDescription, String myVelogName) {
+        if (profileImageUrl != null) {
+            this.profileImageUrl = profileImageUrl;
         }
-        if (requestDto.getSelfDescription() != null) {
-            this.selfDescription = requestDto.getSelfDescription();
+
+        if (selfDescription != null) {
+            this.selfDescription = selfDescription;
+        }
+
+        if (myVelogName != null) {
+            this.myVelogName = myVelogName;
         }
     }
 }

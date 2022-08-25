@@ -28,6 +28,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -37,6 +39,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+
+    private final S3Service s3Service;
 
     @Transactional
     public UserResponseDto signUp(UserRequestDto userRequestDto) {
@@ -163,19 +167,34 @@ public class UserService {
                 .orElseThrow(
                         () -> new UsernameNotFoundException("userId: " + userId + "는 존재하지 않는 아이디입니다.")
                 );
-        user.updateInfo(userInfoUpdateDto);
+        // 이미지를 s3에 업로드 하고
+        String profileImageUrl = null;
+        if (Objects.nonNull(userInfoUpdateDto.getProfileImage())) {
+            profileImageUrl = s3Service.uploadImage(userInfoUpdateDto.getProfileImage());
+        }
+
+        // 기존 이미지를 삭제
+        if (user.getProfileImageUrl() != null) {
+            s3Service.deleteObjectByImageUrl(user.getProfileImageUrl());
+        }
+
+        // 내 정보 업데이트
+        user.updateInfo(
+                profileImageUrl,
+                userInfoUpdateDto.getSelfDescription(),
+                userInfoUpdateDto.getMyVelogName());
         return UserResponseDto.of(user);
     }
 
     @Transactional
     public UserResponseDto getMyInfo() {
-        //저장된 유저 정보
+        // 저장된 유저 정보
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        //유저 정보 있는지 확인
-        if(authentication == null || authentication.getName() == null) {
+        // 유저 정보 있는지 확인
+        if (authentication == null || authentication.getName() == null) {
             throw new RuntimeException("Security Context에 인증 정보가 없습니다");
         }
-        //토큰에서 유저 네임으로 찾은 유저 정보 정보 중 Dto에 해당하는 필드 가져오기 (여기선 유저 네임)
+        // 토큰에서 유저 네임으로 찾은 유저 정보 정보 중 Dto에 해당하는 필드 가져오기 (여기선 유저 네임)
         return userRepository.findByUsername(authentication.getName())
                 .map(UserResponseDto::of)
                 .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다"));

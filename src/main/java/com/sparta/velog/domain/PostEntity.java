@@ -25,9 +25,10 @@ public class PostEntity extends TimeStamp {
     @Column(nullable = false)
     private String content;
 
-    // 이미지 추가
-    @Column(nullable = false)
-    private String imageUrl;
+    // 게시글에 포함된 이미지들    
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post",
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostImageEntity> images = new ArrayList<>();
 
     // 이 게시물에 달린 태그들
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post",

@@ -7,6 +7,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
+import com.amazonaws.util.IOUtils;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -57,8 +59,17 @@ public class S3Service {
                 throw new IllegalArgumentException("bmp,jpg,jpeg,png 형식의 이미지 파일이 요구됨.");
             }
             // 파일 업로드
-            s3Client.putObject(new PutObjectRequest(bucket, fileName, file.getInputStream(), null)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
+            ObjectMetadata objMeta = new ObjectMetadata();
+            byte[] bytes = IOUtils.toByteArray(file.getInputStream());
+            objMeta.setContentLength(bytes.length);
+            ByteArrayInputStream byteArrayIs = new ByteArrayInputStream(bytes);
+            PutObjectRequest putObjReq = new PutObjectRequest(bucket, fileName, byteArrayIs, objMeta).withCannedAcl(CannedAccessControlList.PublicRead);
+            s3Client.putObject(putObjReq);
+
+            // // 파일 업로드
+            // s3Client.putObject(new PutObjectRequest(bucket, fileName, file.getInputStream(), null)
+            //         .withCannedAcl(CannedAccessControlList.PublicRead));
+
         } catch (IOException e) {
             throw new IllegalArgumentException("S3 Bucket 객체 업로드 실패.");
         }
@@ -76,6 +87,14 @@ public class S3Service {
     }
 
     public void deleteObject(String sourceKey) {
+        s3Client.deleteObject(bucket, sourceKey);
+    }
+
+    // DB에 있는 값을 그대로 사용하기 위하여 새로운 메소드 생성
+    public void deleteObjectByImageUrl(String imageUrl) {
+        // split을 통해 나누고 나눈 length에서 1을 빼서 마지막 값(파일명)을 사용함.
+        String sourceKey = imageUrl.split("/")[imageUrl.split("/").length - 1];
+        // 소스키로 s3에서 삭제
         s3Client.deleteObject(bucket, sourceKey);
     }
 
