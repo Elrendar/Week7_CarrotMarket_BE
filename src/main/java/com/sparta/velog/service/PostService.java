@@ -133,18 +133,6 @@ public class PostService {
         post.setTitle(postRequestDto.getTitle());
         post.setContent(postRequestDto.getContent());
 
-        // // 이미지 수정
-        // String imageUrl = null;
-
-        // // 새로운 이미지가 있으면 새로운 파일을 넣고 기존 파일 삭제
-        // if (Objects.nonNull(postRequestDto.getImageFiles())) {
-        //     // 새로운 이미지 파일 s3 버킷 저장
-        //     imageUrl = s3Service.uploadImage(postRequestDto.getImageFiles().get(0));
-        // } else {
-        //     // 이미지 파일이 Null 값이면 기존 이미지 그대로 사용함.
-        //     // imageUrl = post.getImageUrl();
-        // }
-
         // 업로드할 이미지 파일이 있는지 확인
         if (postRequestDto.getImageFiles() != null) {
             // 기존 이미지 모두 삭제

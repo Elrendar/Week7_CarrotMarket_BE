@@ -33,7 +33,7 @@ public class PostListResponseDto {
     @NotBlank
     String modifiedAt;
     @NotBlank
-    String commentCount;
+    int commentCount;
     int likeCount;
 
     public static PostListResponseDto of(PostEntity postEntity) {
@@ -53,7 +53,7 @@ public class PostListResponseDto {
                 .profileImageUrl(postEntity.getUser().getProfileImageUrl())
                 .createdAt(postEntity.getCreatedAt())
                 .modifiedAt(postEntity.getModifiedAt())
-                // .commentCount(postEntity.getCommentCount())
+                .commentCount(postEntity.getCommentCount())
                 .likeCount(postEntity.getLikeCount())
                 .build();
     }

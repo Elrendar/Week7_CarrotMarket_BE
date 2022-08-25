@@ -48,7 +48,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://localhost:3000");
-        // configuration.addAllowedOrigin("프론트엔드 서버주소");
+        configuration.addAllowedOrigin("http://ec2-52-79-227-137.ap-northeast-2.compute.amazonaws.com:8000/");
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "OPTIONS", "DELETE", "PATCH"));
         configuration.setAllowCredentials(true);

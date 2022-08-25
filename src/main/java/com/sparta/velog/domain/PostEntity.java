@@ -43,6 +43,9 @@ public class PostEntity extends TimeStamp {
     @Column(nullable = false)
     private int likeCount = 0;
 
+    @Column(nullable = false)
+    private int commentCount = 0;
+
     // 글쓴이
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -57,5 +60,13 @@ public class PostEntity extends TimeStamp {
 
     public int minusLikeCount() {
         return --likeCount;
+    }
+
+    public int addCommentCount() {
+        return ++commentCount;
+    }
+
+    public int minusCommentCount() {
+        return --commentCount;
     }
 }

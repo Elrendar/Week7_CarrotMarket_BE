@@ -19,18 +19,11 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
     private final PostService postService;
 
-    // 작성글 검색 (아래 글 목록 보기에 통합됨)
-    // @GetMapping("/search")
-    // public ResponseEntity<List<PostResposeSearchDto>> search(@RequestParam(name = "query") String keyword) {
-    //     List<PostResposeSearchDto> boardDtoList = postService.search(keyword);
-    //     return ResponseEntity.ok(postService.search(keyword));
-    // }
-
     // 글 목록 보기
     @GetMapping
     public ResponseEntity<Page<PostListResponseDto>> getPostPages(
             @RequestParam(required = false) String query,
-            @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(size = 50, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(postService.getPostPages(query, pageable));
     }
 

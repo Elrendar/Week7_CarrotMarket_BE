@@ -35,14 +35,12 @@ public class PostDetailResponseDto {
     List<String> hashtags;
     // 게시글 좋아요 수
     int likeCount;
+    // 댓글 수
+    int commentCount;
     @NotBlank
     String createdAt;
     @NotBlank
     String modifiedAt;
-    // 이전 글 id
-    Long previousPostId;
-    // 다음 글 id
-    Long nextPostId;
 
     public static PostDetailResponseDto of(PostEntity postEntity) {
         var postTags = postEntity.getPostTags();
@@ -67,6 +65,7 @@ public class PostDetailResponseDto {
                 .createdAt(postEntity.getCreatedAt())
                 .modifiedAt(postEntity.getModifiedAt())
                 .likeCount(postEntity.getLikeCount())
+                .commentCount(postEntity.getCommentCount())
                 .build();
     }
 }
