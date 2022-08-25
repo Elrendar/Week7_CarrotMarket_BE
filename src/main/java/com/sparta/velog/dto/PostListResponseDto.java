@@ -28,6 +28,12 @@ public class PostListResponseDto {
     String username;
     @NotBlank
     String profileImageUrl;
+    @NotBlank
+    String createdAt;
+    @NotBlank
+    String modifiedAt;
+    @NotBlank
+    String commentCount;
     int likeCount;
 
     public static PostListResponseDto of(PostEntity postEntity) {
@@ -45,6 +51,9 @@ public class PostListResponseDto {
                 .thumbnailUrl(firstImage)
                 .username(postEntity.getUser().getUsername())
                 .profileImageUrl(postEntity.getUser().getProfileImageUrl())
+                .createdAt(postEntity.getCreatedAt())
+                .modifiedAt(postEntity.getModifiedAt())
+                // .commentCount(postEntity.getCommentCount())
                 .likeCount(postEntity.getLikeCount())
                 .build();
     }

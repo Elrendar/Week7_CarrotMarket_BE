@@ -26,7 +26,8 @@ public abstract class TimeStamp {
     public void onPrePersist() {
         this.createdAt =
                 LocalDateTime.now().format(
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS"));
+                        DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm:ss" +
+                                ".SS"));
         this.modifiedAt = this.createdAt;
     }
 
@@ -34,7 +35,7 @@ public abstract class TimeStamp {
     @PreUpdate
     public void onPreUpdate() {
         this.modifiedAt = LocalDateTime.now().format(
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS"));
+                DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm:ss.SS"));
     }
 }
 

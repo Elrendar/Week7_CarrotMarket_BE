@@ -30,15 +30,24 @@ public class PostService {
 
     private final S3Service s3Service;
 
-    /* search */
+    // /* search */
+    // @Transactional(readOnly = true)
+    // public List<PostListResponseDto> search(String keyword) {
+    //     return postRepository.findByTitleContaining(keyword).map(PostListResponseDto::of);
+    // }
+
     @Transactional(readOnly = true)
-    public List<PostEntity> search(String keyword) {
-        return postRepository.findByTitleContaining(keyword);
+    public Page<PostListResponseDto> getPostPages(String searchKeyword, Pageable pageable) {
+        // 검색어가 없으면 그냥 전체글을 반환
+        if (searchKeyword == null) {
+            return postRepository.findAll(pageable).map(PostListResponseDto::of);
+        }
+        // 검색어가 있으면
+        return postRepository.findByTitleContaining(searchKeyword, pageable).map(PostListResponseDto::of);
     }
 
     @Transactional
-    public long createPost(long userId,
-                           PostRequestDto postRequestDto) {
+    public long createPost(long userId, PostRequestDto postRequestDto) {
         // 작성자 매핑을 위한 UserEntity 객체 생성
         var user = UserEntity.builder()
                 .id(userId)
@@ -77,17 +86,6 @@ public class PostService {
         }
 
         return post.getId();
-    }
-
-    @Transactional(readOnly = true)
-    public Page<PostListResponseDto> getPostPages(String searchKeyword, Pageable pageable) {
-        // 검색어가 없으면 그냥 전체글을 반환
-        if (searchKeyword == null) {
-            return postRepository.findAll(pageable).map(PostListResponseDto::of);
-        }
-        // 검색어가 있으면 -> 작업예정
-        return null;
-        // return postRepository.findByTagContaining(searchKeyword, pageable).map(PostListResponseDto::of);
     }
 
     @Transactional(readOnly = true)
@@ -260,5 +258,10 @@ public class PostService {
             post.getPostTags().clear();
             post.getPostTags().addAll(savedPostTags);
         }
+    }
+
+    public Page<PostListResponseDto> getMyPosts(long userId, Pageable pageable) {
+        // 검색어가 있으면
+        return postRepository.findByUserId(userId, pageable).map(PostListResponseDto::of);
     }
 }

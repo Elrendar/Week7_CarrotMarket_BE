@@ -51,13 +51,18 @@ public class S3Service {
     }
 
     public String uploadImage(MultipartFile file) {
+        // 파일 이름 받아오기
+        String fileName = Objects.requireNonNull(file.getOriginalFilename()).toLowerCase();
 
-        String fileName = UUID.randomUUID() + "-" + Objects.requireNonNull(file.getOriginalFilename()).toLowerCase();
+        // 확장자 점검
+        if (!(fileName.endsWith(".bmp") || fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png"))) {
+            throw new IllegalArgumentException("bmp,jpg,jpeg,png 형식의 이미지 파일이 요구됨.");
+        }
+
+        // 파일이름을 무작위 값으로 변경
+        fileName = String.valueOf(UUID.randomUUID());
+
         try {
-            // 확장자 점검
-            if (!(fileName.endsWith(".bmp") || fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png"))) {
-                throw new IllegalArgumentException("bmp,jpg,jpeg,png 형식의 이미지 파일이 요구됨.");
-            }
             // 파일 업로드
             ObjectMetadata objMeta = new ObjectMetadata();
             byte[] bytes = IOUtils.toByteArray(file.getInputStream());
@@ -73,6 +78,7 @@ public class S3Service {
         } catch (IOException e) {
             throw new IllegalArgumentException("S3 Bucket 객체 업로드 실패.");
         }
+
         return s3Client.getUrl(bucket, fileName).toString();    ///url string 리턴
     }
 

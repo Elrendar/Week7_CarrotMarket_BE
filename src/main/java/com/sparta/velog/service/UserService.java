@@ -167,14 +167,12 @@ public class UserService {
                 .orElseThrow(
                         () -> new UsernameNotFoundException("userId: " + userId + "는 존재하지 않는 아이디입니다.")
                 );
-        // 이미지를 s3에 업로드 하고
+        // 새롭게 변경할 이미지가 있다면
         String profileImageUrl = null;
         if (Objects.nonNull(userInfoUpdateDto.getProfileImage())) {
+            // S3에 업로드 하고
             profileImageUrl = s3Service.uploadImage(userInfoUpdateDto.getProfileImage());
-        }
-
-        // 기존 이미지를 삭제
-        if (user.getProfileImageUrl() != null) {
+            // 기존 이미지를 삭제
             s3Service.deleteObjectByImageUrl(user.getProfileImageUrl());
         }
 

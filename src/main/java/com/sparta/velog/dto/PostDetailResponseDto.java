@@ -25,7 +25,6 @@ public class PostDetailResponseDto {
     @NotBlank
     String content;
     // 이미지 url 조회
-    String thumbnailUrl;
     List<String> imageUrls;
     @NotBlank
     String username;
@@ -36,6 +35,10 @@ public class PostDetailResponseDto {
     List<String> hashtags;
     // 게시글 좋아요 수
     int likeCount;
+    @NotBlank
+    String createdAt;
+    @NotBlank
+    String modifiedAt;
     // 이전 글 id
     Long previousPostId;
     // 다음 글 id
@@ -48,13 +51,6 @@ public class PostDetailResponseDto {
             tags.add(postTag.getTag().getTagString());
         }
 
-        var firstImage = "";
-        if (postEntity.getImages() != null) {
-            if (postEntity.getImages().size() > 0) {
-                firstImage = postEntity.getImages().get(0).getUrl();
-            }
-        }
-
         var images = new ArrayList<String>();
         for (var postImage : postEntity.getImages()) {
             images.add(postImage.getUrl());
@@ -64,11 +60,12 @@ public class PostDetailResponseDto {
                 .postId(postEntity.getId())
                 .title(postEntity.getTitle())
                 .content(postEntity.getContent())
-                .thumbnailUrl(firstImage)
                 .imageUrls(images)
                 .username(postEntity.getUser().getUsername())
                 .profileImageUrl(postEntity.getUser().getProfileImageUrl())
                 .hashtags(tags)
+                .createdAt(postEntity.getCreatedAt())
+                .modifiedAt(postEntity.getModifiedAt())
                 .likeCount(postEntity.getLikeCount())
                 .build();
     }

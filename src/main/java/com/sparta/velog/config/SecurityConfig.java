@@ -28,7 +28,6 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
     private final TokenProvider tokenProvider;
-    // private final CorsFilter corsFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
@@ -65,12 +64,9 @@ public class SecurityConfig {
                 // token을 사용하는 방식이기 때문에 csrf를 disable
                 .csrf().disable()
 
-                // // cors 필터 적용
-                // .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+                // cors 필터 적용
                 .cors().configurationSource(corsConfigurationSource())
                 .and()
-                // .addFilterBefore(new JwtFilter(tokenProvider),
-                //         UsernamePasswordAuthenticationFilter.class)
 
                 // 예외처리에 직접 구현한 클래스들을 사용하도록 추가
                 .exceptionHandling()
@@ -91,9 +87,6 @@ public class SecurityConfig {
                 .antMatchers("/api/users/auth/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
                 // .antMatchers(HttpMethod.POST, "/api/posts/**").hasAnyAuthority("ROLE_USER")
-                // .antMatchers(HttpMethod.PUT, "/api/posts/**").hasAnyAuthority("ROLE_USER")
-                // .antMatchers(HttpMethod.PATCH, "/api/posts/**").hasAnyAuthority("ROLE_USER")
-                // .antMatchers(HttpMethod.DELETE, "/api/posts/**").hasAnyAuthority("ROLE_USER")
 
                 // 나머지는 전부 인증 필요
                 .anyRequest().authenticated()

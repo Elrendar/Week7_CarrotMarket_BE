@@ -61,6 +61,7 @@ public class UserEntity extends TimeStamp {
         return UserEntity.builder()
                 .username(userRequestDto.getUsername())
                 .password(passwordEncoder.encode(userRequestDto.getPassword1()))
+                .profileImageUrl("https://velog.velcdn.com/images/hyexjun/profile/108c8f1a-b604-4881-9906-00270be78272/image.jpg")
                 .selfDescription("")
                 .myVelogName(userRequestDto.getUsername() + "의 벨로그")
                 .build();
