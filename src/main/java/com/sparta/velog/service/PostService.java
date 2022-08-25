@@ -4,6 +4,7 @@ import com.sparta.velog.domain.*;
 import com.sparta.velog.dto.PostDetailResponseDto;
 import com.sparta.velog.dto.PostListResponseDto;
 import com.sparta.velog.dto.PostRequestDto;
+import com.sparta.velog.dto.PostResposeSearchDto;
 import com.sparta.velog.exception.UnAuthorizedException;
 import com.sparta.velog.exception.runtime.PostNotFoundException;
 import com.sparta.velog.repository.HashtagRepository;
@@ -35,8 +36,25 @@ public class PostService {
 
     /* search */
     @Transactional(readOnly = true)
-    public List<PostEntity> search(String keyword) {
-        return postRepository.findByTitleContaining(keyword);
+    public List<PostResposeSearchDto> search(String keyword) {
+        List<PostEntity> postEntities = postRepository.findByTitleContaining(keyword);
+        List<PostResposeSearchDto> postListResponseDto = new ArrayList<>();
+        if(postEntities.isEmpty())return postListResponseDto;
+        for(PostEntity postEntity : postEntities){
+            postListResponseDto.add(this.convertEntityToDto(postEntity));
+        }
+        return postListResponseDto;
+    }
+
+    private PostResposeSearchDto convertEntityToDto(PostEntity postEntities) {
+        return PostResposeSearchDto.builder()
+                .userId(postEntities.getUserId())
+                .postId(postEntities.getId())
+                .title(postEntities.getTitle())
+                .content(postEntities.getContent())
+                .profileImageUrl(postEntities.getImageUrl())
+                .likeCount(postEntities.getLikeCount())
+                .build();
     }
 
     @Transactional

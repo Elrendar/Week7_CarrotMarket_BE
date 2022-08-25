@@ -1,15 +1,13 @@
 package com.sparta.velog.dto;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.sparta.velog.domain.CommentEntity;
-import com.sparta.velog.domain.PostEntity;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.extern.jackson.Jacksonized;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
 @Jacksonized
@@ -17,16 +15,18 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @EnableJpaRepositories
-public class CommentRequestDto {
+public class CommentResponseDto {
     @NotBlank
-    private Long CommentId;
-
+    Long postId;
+    @NotBlank
+    Long userId;
     @NotBlank
     private String comment;
 
-    public static CommentRequestDto of(CommentEntity commentEntity) {
-        return CommentRequestDto.builder()
+    private CommentResponseDto of(CommentEntity commentEntity){
+        return CommentResponseDto.builder()
                 .comment(commentEntity.getComment())
                 .build();
+
     }
 }
