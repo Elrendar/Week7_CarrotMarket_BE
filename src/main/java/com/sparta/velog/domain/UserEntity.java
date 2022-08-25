@@ -8,7 +8,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -55,14 +54,14 @@ public class UserEntity extends TimeStamp {
     // 작성글 사진 리스트
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user",
             cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PostImageEntity> postImages = new ArrayList<>();
+    private List<PostImageEntity> postImages;
 
     public static UserEntity of(UserRequestDto userRequestDto, PasswordEncoder passwordEncoder) {
         return UserEntity.builder()
                 .username(userRequestDto.getUsername())
                 .password(passwordEncoder.encode(userRequestDto.getPassword1()))
                 .profileImageUrl("https://velog.velcdn.com/images/hyexjun/profile/108c8f1a-b604-4881-9906-00270be78272/image.jpg")
-                .selfDescription("")
+                .selfDescription("안녕하세요. " + userRequestDto.getUsername() + "입니다.")
                 .myVelogName(userRequestDto.getUsername() + "의 벨로그")
                 .build();
     }

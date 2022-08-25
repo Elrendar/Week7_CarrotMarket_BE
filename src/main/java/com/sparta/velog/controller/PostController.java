@@ -3,7 +3,6 @@ package com.sparta.velog.controller;
 import com.sparta.velog.dto.PostDetailResponseDto;
 import com.sparta.velog.dto.PostListResponseDto;
 import com.sparta.velog.dto.PostRequestDto;
-import com.sparta.velog.dto.PostResposeSearchDto;
 import com.sparta.velog.service.PostService;
 import com.sparta.velog.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -20,19 +19,14 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
     private final PostService postService;
 
-    // // 작성글 검색
+    // 작성글 검색 (아래 글 목록 보기에 통합됨)
     // @GetMapping("/search")
-    // public ResponseEntity<List<PostEntity>> search(@RequestParam(name = "query") String keyword) {
+    // public ResponseEntity<List<PostResposeSearchDto>> search(@RequestParam(name = "query") String keyword) {
+    //     List<PostResposeSearchDto> boardDtoList = postService.search(keyword);
     //     return ResponseEntity.ok(postService.search(keyword));
     // }
-    // 작성글 검색
-    @GetMapping("/search")
-    public ResponseEntity<List<PostResposeSearchDto>> search(@RequestParam(name = "query") String keyword) {
-        List<PostResposeSearchDto> boardDtoList = postService.search(keyword);
-        return ResponseEntity.ok(postService.search(keyword));
-    }
 
-    // 글 목록 불러오기
+    // 글 목록 보기
     @GetMapping
     public ResponseEntity<Page<PostListResponseDto>> getPostPages(
             @RequestParam(required = false) String query,
@@ -81,5 +75,13 @@ public class PostController {
             @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         var userId = SecurityUtil.getCurrentUserIdByLong();
         return ResponseEntity.ok(postService.getMyPosts(userId, pageable));
+    }
+
+    // 좋아요 누른 글 보기
+    @GetMapping("/liked")
+    public ResponseEntity<Page<PostListResponseDto>> getLikedPosts(
+            @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        var userId = SecurityUtil.getCurrentUserIdByLong();
+        return ResponseEntity.ok(postService.getLikedPosts(userId, pageable));
     }
 }

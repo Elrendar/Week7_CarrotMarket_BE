@@ -4,14 +4,15 @@ import com.sparta.velog.domain.*;
 import com.sparta.velog.dto.PostDetailResponseDto;
 import com.sparta.velog.dto.PostListResponseDto;
 import com.sparta.velog.dto.PostRequestDto;
-import com.sparta.velog.dto.PostResposeSearchDto;
 import com.sparta.velog.exception.UnAuthorizedException;
 import com.sparta.velog.exception.runtime.PostNotFoundException;
 import com.sparta.velog.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +29,7 @@ public class PostService {
     private final PostTagRepository postTagRepository;
     private final LikeRepository likeRepository;
     private final PostImageRepository postImageRepository;
-
+    private final UserRepository userRepository;
     private final S3Service s3Service;
 
     /* search */
@@ -41,27 +42,27 @@ public class PostService {
         // 검색어가 있으면
         return postRepository.findByTitleContaining(searchKeyword, pageable).map(PostListResponseDto::of);
     }
-        public List<PostResposeSearchDto> search(String keyword) {
-        List<PostEntity> postEntities = postRepository.findByTitleContaining(keyword);
-        List<PostResposeSearchDto> postListResponseDto = new ArrayList<>();
-        if(postEntities.isEmpty())return postListResponseDto;
-        for(PostEntity postEntity : postEntities){
-            postListResponseDto.add(this.convertEntityToDto(postEntity));
-        }
-        return postListResponseDto;
-    }
 
-    private PostResposeSearchDto convertEntityToDto(PostEntity postEntities) {
-        return PostResposeSearchDto.builder()
-                .userId(postEntities.getUserId())
-                .postId(postEntities.getId())
-                .title(postEntities.getTitle())
-                .content(postEntities.getContent())
-                .profileImageUrl(postEntities.getImageUrl())
-                .likeCount(postEntities.getLikeCount())
-                .build();
-    }
+    // public List<PostResposeSearchDto> search(String keyword) {
+    //     List<PostEntity> postEntities = postRepository.findByTitleContaining(keyword);
+    //     List<PostResposeSearchDto> postListResponseDto = new ArrayList<>();
+    //     if (postEntities.isEmpty()) return postListResponseDto;
+    //     for (PostEntity postEntity : postEntities) {
+    //         postListResponseDto.add(this.convertEntityToDto(postEntity));
+    //     }
+    //     return postListResponseDto;
+    // }
 
+    // private PostResposeSearchDto convertEntityToDto(PostEntity postEntities) {
+    //     return PostResposeSearchDto.builder()
+    //             .userId(postEntities.getUserId())
+    //             .postId(postEntities.getId())
+    //             .title(postEntities.getTitle())
+    //             .content(postEntities.getContent())
+    //             .profileImageUrl(postEntities.getUser().getProfileImageUrl())
+    //             .likeCount(postEntities.getLikeCount())
+    //             .build();
+    // }
 
     @Transactional
     public long createPost(long userId, PostRequestDto postRequestDto) {
@@ -280,5 +281,27 @@ public class PostService {
     public Page<PostListResponseDto> getMyPosts(long userId, Pageable pageable) {
         // 검색어가 있으면
         return postRepository.findByUserId(userId, pageable).map(PostListResponseDto::of);
+    }
+
+    public Page<PostListResponseDto> getLikedPosts(long userId, Pageable pageable) {
+        // 검색어가 있으면
+        var user = userRepository.findById(userId)
+                .orElseThrow(
+                        () -> new UsernameNotFoundException("userId: " + userId + "는 존재하지 않는 아이디입니다.")
+                );
+        if (user.getLikePosts() == null) {
+            return null;
+        }
+
+        ArrayList<PostEntity> likedPosts = new ArrayList<>();
+
+        for (var likePost : user.getLikePosts()) {
+            likedPosts.add(likePost.getPost());
+        }
+
+        final int start = (int) pageable.getOffset();
+        final int end = Math.min((start + pageable.getPageSize()), likedPosts.size());
+
+        return new PageImpl<>(likedPosts.subList(start, end), pageable, likedPosts.size()).map(PostListResponseDto::of);
     }
 }

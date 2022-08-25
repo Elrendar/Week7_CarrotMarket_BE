@@ -59,8 +59,10 @@ public class S3Service {
             throw new IllegalArgumentException("bmp,jpg,jpeg,png 형식의 이미지 파일이 요구됨.");
         }
 
+        String fileExtension = fileName.substring(fileName.length() - 4);
+
         // 파일이름을 무작위 값으로 변경
-        fileName = String.valueOf(UUID.randomUUID());
+        fileName = UUID.randomUUID() + fileExtension;
 
         try {
             // 파일 업로드
